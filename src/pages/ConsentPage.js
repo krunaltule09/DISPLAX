@@ -30,7 +30,7 @@ const ConsentPage = () => {
       <div className="consent-content">
         {/* Waveform animation */}
         <div className="waveform-container">
-          <img src="/assets/Wave.svg"/>
+          <img src="/assets/Wave.svg" alt="" aria-hidden="true" />
         </div>
 
         {/* Question */}
