@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback, memo } from 'react';
 import { createPortal } from 'react-dom';
 import ObjectOptions from './ObjectOptions';
+import ObjectLabel from './ObjectLabel';
 
 /**
  * DraggableObject component that can be dragged around the canvas
@@ -23,6 +24,7 @@ const DraggableObject = memo(({ object, onDrag, onClick, isActive, options, onOp
   const [isAnimatingOut, setIsAnimatingOut] = useState(false);
   const startPosRef = useRef({ x: 0, y: 0 });
   const hasMovedRef = useRef(false);
+  const labelText = object.name ?? object.label;
   
   // Handle pointer down (works for mouse, touch, and pen)
   const handlePointerDown = useCallback((e) => {
@@ -222,6 +224,13 @@ const DraggableObject = memo(({ object, onDrag, onClick, isActive, options, onOp
             <span className="font-bold">{object.name.charAt(0)}</span>
           )}
         </div>
+
+        {/* Floating label using custom component */}
+        {labelText && (
+          <div className="object-label absolute object-label-anchor">
+            <ObjectLabel text={labelText} />
+          </div>
+        )}
       </div>
 
       {(optionsVisible || isAnimatingOut) && appContainer && createPortal(
