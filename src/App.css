@@ -5,6 +5,25 @@
   box-sizing: border-box;
 }
 
+/* =========================
+   ObjectLabel component UI
+   ========================= */
+.object-badge { display: inline-flex; align-items: center; position: relative; height: 56px; pointer-events: none; }
+.object-badge-icon { position: relative; width: 56px; height: 56px; border-radius: 9999px; background: linear-gradient(135deg, #00FFFF 0%, #00A4D4 100%); display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 16px rgba(0, 164, 212, 0.35); }
+.object-badge-icon img { width: 24px; height: 24px; filter: invert(1) brightness(1.25); }
+.object-badge-ring { position: absolute; inset: -3px; border-radius: 9999px; border: 2px solid rgba(0,255,255,0.9); box-shadow: 0 0 10px rgba(0,255,255,0.5), inset 0 0 6px rgba(255,255,255,0.15); pointer-events: none; }
+.object-badge-pill { height: 48px; margin-left: -8px; padding: 0 18px 0 26px; display: flex; align-items: center; border-radius: 9999px; background: linear-gradient(90deg, #00FFFF -0.12%, #00A4D4 99.88%); color: #fff; box-shadow: 0 8px 24px rgba(0,0,0,0.25); position: relative; }
+.object-badge-pill:before { content: ""; position: absolute; left: 10px; top: 50%; transform: translateY(-50%); width: 28px; height: 28px; border-radius: 9999px; background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.2), rgba(255,255,255,0)); filter: blur(0.2px); }
+.object-badge-text { font-weight: 700; font-size: 15px; white-space: nowrap; letter-spacing: 0.1px; text-shadow: 0 1px 2px rgba(0,0,0,0.35); }
+
+/* Scale the badge a bit on small screens without breaking layout */
+@media (max-width: 768px) {
+  .object-badge { transform: scale(0.85); transform-origin: left center; height: 48px; }
+  .object-badge-icon { width: 48px; height: 48px; }
+  .object-badge-pill { height: 42px; padding: 0 14px 0 22px; }
+  .object-badge-text { font-size: 13px; }
+}
+
 html, body {
   width: 100%;
   height: 100%;
@@ -318,6 +337,23 @@ canvas {
   margin-bottom: 0.25rem;
 }
 
+/* Label UI for draggable objects */
+.object-label { display: flex; align-items: center; gap: 8px; }
+.object-label-anchor { top: -56%; left: 67%; pointer-events: none; z-index: 15; }
+.object-label-connector { display: flex; align-items: center; }
+.object-label-dot { width: 8px; height: 8px; border-radius: 9999px; background: #67e8f9; box-shadow: 0 0 8px rgba(103,232,249,0.8); border: 2px solid #22d3ee; }
+.object-label-line { display: block; width: 24px; height: 2px; background: linear-gradient(90deg, #38bdf8 0%, #34d399 100%); border-radius: 2px; margin-left: 4px; }
+.object-label-pill { display: flex; align-items: center; gap: 10px; background: linear-gradient(90deg, rgba(16,185,214,0.85), rgba(45,212,191,0.85)); color: #fff; padding: 8px 14px 8px 8px; border-radius: 9999px; box-shadow: 0 8px 24px rgba(0,0,0,0.25); backdrop-filter: blur(4px); }
+.object-label-icon { width: 28px; height: 28px; border-radius: 9999px; border: 2px solid rgba(255,255,255,0.8); display: flex; align-items: center; justify-content: center; background: radial-gradient(ellipse at center, rgba(255,255,255,0.15), rgba(255,255,255,0.05)); box-shadow: 0 0 10px rgba(56,189,248,0.8); }
+.object-label-text { font-weight: 600; white-space: nowrap; }
+
+/* SVG-based label styles */
+.object-label-svg-wrapper { position: relative; width: 300px; height: auto; }
+.object-label-svg { width: 100%; height: auto; display: block; filter: drop-shadow(0 6px 16px rgba(0,0,0,0.35)); position: relative; z-index: 0; }
+.object-label-text-svg { position: absolute; top: 23%; left: 60%; right: 6%; transform: translateY(-50%); color: #fff; font-weight: 600; font-size: 14px; letter-spacing: 0.2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-shadow: 0 1px 2px rgba(0,0,0,0.5); z-index: 2; }
+/* Cover the original SVG text area so only dynamic label is visible */
+.object-label-cover { position: absolute; top: 50%; left: 80px; right: 6px; height: 56px; transform: translateY(-50%); border-radius: 9999px; background: linear-gradient(90deg, rgba(0,255,255,1) 0%, rgba(0,164,212,1) 100%); z-index: 1; box-shadow: inset 0 0 18px rgba(0, 164, 212, 0.4); }
+
 /* For mobile devices */
 @media (max-width: 768px) {
   .option-item {
@@ -335,6 +371,11 @@ canvas {
     max-height: 80vh !important;
     overflow-y: auto !important;
   }
+  /* Scale down label on small screens */
+  .object-label-svg-wrapper { width: 230px; }
+  .object-label-text-svg { left: 40%; right: 8%; font-size: 13px; }
+  .object-label-cover { left: 80px; right: 6px; height: 48px; }
+  .object-label-anchor { top: -60%; left: 62%; }
 }
 
 /* Portrait mode adjustments */
