@@ -50,10 +50,17 @@ canvas {
   will-change: transform, opacity; /* Hint to browser to optimize */
 }
 
-/* Animation for option appearance - optimized for performance */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
-  to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+/* Animation for option appearance and disappearance - optimized for performance */
+@keyframes optionAppear {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(0.2); left: 0; top: 0; }
+  70% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+  100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
+@keyframes optionDisappear {
+  0% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  30% { opacity: 0.8; transform: translate(-50%, -50%) scale(0.9); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(0.2); left: 0; top: 0; }
 }
 
 /* Option item styles */
@@ -62,10 +69,19 @@ canvas {
   height: 50px;
   transform: translate(-50%, -50%);
   box-shadow: 0 0 10px rgba(103, 232, 249, 0.5);
-  animation: fadeIn 0.3s forwards;
-  opacity: 0; /* Start invisible for animation */
-  will-change: transform, opacity; /* Hint to browser to optimize */
+  will-change: transform, opacity, left, top; /* Hint to browser to optimize */
   pointer-events: auto; /* Make clickable */
+}
+
+.option-item.appearing {
+  animation: optionAppear 0.5s forwards;
+  animation-delay: var(--option-delay);
+  opacity: 0; /* Start invisible for animation */
+}
+
+.option-item.disappearing {
+  animation: optionDisappear 0.3s forwards;
+  animation-delay: var(--option-delay);
 }
 
 /* Option label styles */

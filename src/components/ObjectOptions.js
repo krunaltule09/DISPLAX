@@ -1,18 +1,42 @@
-import React, { useMemo, memo } from 'react';
+import React, { useMemo, memo, useState, useEffect } from 'react';
 
 /**
  * ObjectOptions component that displays options in a circle around an object
  * @param {Object} props
  * @param {Object} props.object - The object data with options
  * @param {Function} props.onOptionSelect - Called when an option is selected
+ * @param {boolean} props.isVisible - Whether the options should be visible
+ * @param {Function} props.onAnimationComplete - Called when disappearing animation completes
  */
-const ObjectOptions = memo(({ object, onOptionSelect }) => {
+const ObjectOptions = memo(({ object, onOptionSelect, isVisible = true, onAnimationComplete }) => {
+  // State to track animation state
+  const [animationState, setAnimationState] = useState(isVisible ? 'appearing' : 'idle');
+  
+  // Handle visibility changes
+  useEffect(() => {
+    if (isVisible) {
+      setAnimationState('appearing');
+    } else if (animationState !== 'idle') {
+      setAnimationState('disappearing');
+    }
+  }, [isVisible]);
+  
+  // Handle animation end
+  const handleAnimationEnd = () => {
+    if (animationState === 'disappearing') {
+      setAnimationState('idle');
+      if (onAnimationComplete) {
+        onAnimationComplete();
+      }
+    }
+  };
+  
   // Pre-calculate option positions - memoized to avoid recalculation on re-renders
   const optionElements = useMemo(() => {
     if (!object || !object.options) return [];
     
     return object.options.map((option, index) => {
-      // Calculate position in a circl
+      // Calculate position in a circle
       const angle = (index / object.options.length) * Math.PI * 2;
       const radius = 100; // Distance from center
       const x = Math.cos(angle) * radius;
@@ -25,18 +49,18 @@ const ObjectOptions = memo(({ object, onOptionSelect }) => {
         '--option-delay': `${index * 0.05}s`,
         left: 'var(--option-x)',
         top: 'var(--option-y)',
-        animationDelay: 'var(--option-delay)',
       };
       
       return (
         <div 
           key={option.id}
-          className="option-item absolute bg-gray-800 text-white rounded-full cursor-pointer"
+          className={`option-item absolute bg-gray-800 text-white rounded-full cursor-pointer ${animationState}`}
           style={style}
           onClick={(e) => {
             e.stopPropagation(); // Prevent event bubbling
             onOptionSelect(object.id, option);
           }}
+          onAnimationEnd={index === 0 ? handleAnimationEnd : undefined}
         >
           <div className="flex items-center justify-center h-full">
             {option.id}
@@ -52,7 +76,7 @@ const ObjectOptions = memo(({ object, onOptionSelect }) => {
         </div>
       );
     });
-  }, [object?.id, object?.options, onOptionSelect]);
+  }, [object?.id, object?.options, onOptionSelect, animationState]);
   
   // If there's no object or options, don't render anything
   if (!object || !object.options || object.options.length === 0) return null;

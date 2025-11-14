@@ -14,6 +14,7 @@ function App() {
   const [objects, setObjects] = useState([]);
   const [activeObject, setActiveObject] = useState(null);
   const [showOptions, setShowOptions] = useState(false);
+  const [isAnimatingOut, setIsAnimatingOut] = useState(false);
   const [showHelp, setShowHelp] = useState(true);
   
   // Load objects on component mount - only once
@@ -35,12 +36,25 @@ function App() {
   
   // Handle object click - memoized to prevent recreation on each render
   const handleObjectClick = useCallback((object) => {
-    setActiveObject(prevActive => {
-      const isToggle = prevActive?.id === object.id;
-      setShowOptions(prev => isToggle ? !prev : true);
-      return object;
-    });
-  }, []);
+    // If we're already showing options for this object, start the hide animation
+    if (activeObject?.id === object.id && showOptions && !isAnimatingOut) {
+      setIsAnimatingOut(true);
+      // The actual hiding of options will happen after animation completes
+    } else {
+      // If we're showing options for a different object or no options at all
+      setActiveObject(object);
+      setShowOptions(true);
+      setIsAnimatingOut(false);
+    }
+  }, [activeObject, showOptions, isAnimatingOut]);
+  
+  // Handle animation completion
+  const handleAnimationComplete = useCallback(() => {
+    if (isAnimatingOut) {
+      setShowOptions(false);
+      setIsAnimatingOut(false);
+    }
+  }, [isAnimatingOut]);
   
   // Handle object drag - memoized with useCallback
   const handleObjectDrag = useCallback((id, position) => {
@@ -83,10 +97,12 @@ function App() {
       ))}
       
       {/* Options for active object */}
-      {showOptions && activeObject && (
+      {(showOptions || isAnimatingOut) && activeObject && (
         <ObjectOptions 
           object={activeObject}
           onOptionSelect={handleOptionSelect}
+          isVisible={!isAnimatingOut}
+          onAnimationComplete={handleAnimationComplete}
         />
       )}
       
